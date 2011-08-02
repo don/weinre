@@ -29,6 +29,8 @@
         <antcall target="get-modjewel"/>
         <antcall target="get-web-inspector"/>
         <antcall target="get-swt-mac"/>
+        <antcall target="get-jmdns"/>
+        
     </target>
     
     <!-- ============================================================ -->
@@ -173,6 +175,20 @@
             
         <copy file="${TMP}/src.zip"       tofile="${VENDOR}/swt/cocoa-macosx-x86_64/swt-src.jar"/>
         <copy file="${TMP}/swt-debug.jar" tofile="${VENDOR}/swt/cocoa-macosx-x86_64/swt.jar"/>
+        
+        <delete dir="${TMP}"/>
+    </target>
+
+    <target name="get-jmdns">
+        <delete dir="${VENDOR}/jmdns"/>
+        <mkdir  dir="${VENDOR}/jmdsn"/>
+        
+        <!-- 
+          KLUDGE: copy a local version of jmdns-3.4.0 because of sourceforge's redirects
+          jmdns.jar was extracted from lib/ in jmdns-3.4.0.zip
+          http://sourceforge.net/projects/jmdns/files/jmdns/JmDNS%203.4.0/ 
+        -->
+        <copy file="jmdns.jar" tofile="${VENDOR}/jmdns/jmdns.jar"/>
         
         <delete dir="${TMP}"/>
     </target>

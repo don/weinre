@@ -21,11 +21,15 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import weinre.server.Main;
 import weinre.server.ServerSettings;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
+
 //-------------------------------------------------------------------
 public class HttpServer {
 
     private Main           main;
     private ServerSettings settings;
+    private JmDNS          jmdns;
     
     //---------------------------------------------------------------
     public HttpServer(Main main, ServerSettings settings) {
@@ -112,9 +116,23 @@ public class HttpServer {
             throw e;
         }
         
+        setupZeroConf();
+        
         Main.info("HTTP server started at http://" + niceHostName + ":" + settings.getHttpPort());
         
         return server;
     }
     
+    void setupZeroConf() throws IOException {
+        
+        jmdns = JmDNS.create();        
+        int port = settings.getHttpPort();
+        Main.info("ZeroConf http://" + jmdns.getHostName() + ":" + port);
+        
+        // Starting the server creates an _a record.  Not sure if we really need the service.
+        ServiceInfo service = ServiceInfo.create("_weinre._tcp.local.", "Weinre", port, "The Weinre HTTP Server");
+        Main.debug("ZeroConf Service: " + service);
+        jmdns.registerService(service);
+    }
+        
 }

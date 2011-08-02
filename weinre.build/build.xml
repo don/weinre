@@ -111,6 +111,7 @@
             <classpath path="../${PROJECT_BUILD}/vendor/jetty/jetty.jar"/>
             <classpath path="../${PROJECT_BUILD}/vendor/json4j/json4j.jar"/>
             <classpath path="../${PROJECT_BUILD}/vendor/jetty/servlet-api.jar"/>
+            <classpath path="../${PROJECT_BUILD}/vendor/jmdns/jmdns.jar"/>
             <compilerarg value="-Xlint"/>
         </javac>
         
@@ -390,6 +391,10 @@
             </zipfileset>
             
             <zipfileset src="${VENDOR}/json4j/json4j.jar">
+                <exclude name="META-INF/**/*"/>
+            </zipfileset>
+
+            <zipfileset src="${VENDOR}/jmdns/jmdns.jar">
                 <exclude name="META-INF/**/*"/>
             </zipfileset>
             
