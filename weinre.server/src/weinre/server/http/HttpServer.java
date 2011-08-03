@@ -116,7 +116,9 @@ public class HttpServer {
             throw e;
         }
         
-        setupZeroConf();
+        if (settings.useZeroConf()) {
+            setupZeroConf();
+        }
         
         Main.info("HTTP server started at http://" + niceHostName + ":" + settings.getHttpPort());
         
