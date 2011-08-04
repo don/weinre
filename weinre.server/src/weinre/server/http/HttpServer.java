@@ -166,7 +166,7 @@ public class HttpServer {
         int port = settings.getHttpPort();
         Main.info("ZeroConf http://" + jmdns.getHostName() + ":" + port);  // TODO get name in callback
         
-        String serviceName = "Weinre";
+        String serviceName = "weinre";
         ServiceInfo weinreService = ServiceInfo.create("_weinre._tcp.local.", serviceName, port, "");
         ServiceInfo httpService = ServiceInfo.create("_http._tcp.local.", serviceName, port, "");
         
