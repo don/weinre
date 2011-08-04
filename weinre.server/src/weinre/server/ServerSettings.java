@@ -35,7 +35,7 @@ public class ServerSettings {
 //  private boolean     useProxy           = false;
     private boolean     reuseAddr          = true;
     private boolean     verbose            = false;
-    private boolean     zeroConf           = false;        
+    private String      zeroConf           = null;        
     private int         readTimeoutSeconds = 5;
     private int         deathTimeoutSeconds;
     private Properties  fileProperties;
@@ -62,7 +62,7 @@ public class ServerSettings {
         options.addOption("httpPort",     true,  "tcp/ip port to use for the http server");
         options.addOption("boundHost",    true,  "host address to bind to");
         options.addOption("verbose",      true,  "display verbose logging information [true|false]");
-        options.addOption("zeroConf",     true,  "starts ZeroConf server [true|false]");        
+        options.addOption("zeroConf",     true,  "start ZeroConf [true|false|machine-name]");        
 //      options.addOption("useProxy",     true,  "enable HTTP proxy [true|false]");
         options.addOption("reuseAddr",    true,  "force bind the port if already bound [true|false]");
         options.addOption("readTimeout",  true,  "seconds before timing out HTTP GETs");
@@ -125,7 +125,7 @@ public class ServerSettings {
         httpPort            = getIntFromOption(commandLine,     "httpPort",     httpPort,             0, 0x00FFFF);
         boundHost           = getStringFromOption(commandLine,  "boundHost",    boundHost);
         verbose             = getBooleanFromOption(commandLine, "verbose",      verbose);
-        zeroConf            = getBooleanFromOption(commandLine, "zeroConf",     zeroConf);        
+        zeroConf            = getStringFromOption(commandLine,  "zeroConf",     zeroConf);        
 //      useProxy            = getBooleanFromOption(commandLine, "useProxy",     useProxy);
         reuseAddr           = getBooleanFromOption(commandLine, "reuseAddr",    reuseAddr);
         readTimeoutSeconds  = getIntFromOption(commandLine,     "readTimeout",  readTimeoutSeconds,   0, 0x00FFFFFF);
@@ -253,6 +253,11 @@ public class ServerSettings {
 
     //---------------------------------------------------------------
     public boolean useZeroConf() {
+        return (zeroConf != null) && !(zeroConf.equalsIgnoreCase("false"));
+    }
+
+    //---------------------------------------------------------------
+    public String getZeroConf() {
         return zeroConf;
     }
     

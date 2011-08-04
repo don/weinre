@@ -23,6 +23,9 @@ import weinre.server.ServerSettings;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
+import java.net.InetAddress;
+import javax.jmdns.impl.HostInfo;
+import java.net.UnknownHostException;
 
 //-------------------------------------------------------------------
 public class HttpServer {
@@ -124,17 +127,52 @@ public class HttpServer {
         
         return server;
     }
+
+    String getZeroConfName() throws UnknownHostException {
+        String name = settings.getZeroConf();
+        String boundHost = settings.getBoundHostValue();
+        if (Boolean.valueOf(name)) {            
+            if (boundHost == null || (boundHost.indexOf('.') > 0)) {
+                InetAddress localhost = InetAddress.getLocalHost();
+                String fullname = localhost.getHostName();
+                String[] parts = fullname.split("\\.");
+                name = parts[0];
+            } else {
+                name = boundHost;
+            }
+        }
+        return name;        
+    }
+    
+    byte[] getZeroConfAddress() throws UnknownHostException {
+        InetAddress address;
+        String boundHost = settings.getBoundHostValue();
+
+        if (boundHost == null) {
+            HostInfo kludge = HostInfo.newHostInfo(null, null, null);
+            address = kludge.getInetAddress();
+        } else {
+            address = InetAddress.getByName(boundHost); // name or address
+        }
+        return address.getAddress();
+    }
     
     void setupZeroConf() throws IOException {
+
+        String name = getZeroConfName();
+        InetAddress address = InetAddress.getByAddress(name, getZeroConfAddress());
+        jmdns = JmDNS.create(address, name);
         
-        jmdns = JmDNS.create();        
         int port = settings.getHttpPort();
-        Main.info("ZeroConf http://" + jmdns.getHostName() + ":" + port);
+        Main.info("ZeroConf http://" + jmdns.getHostName() + ":" + port);  // TODO get name in callback
         
-        // Starting the server creates an _a record.  Not sure if we really need the service.
-        ServiceInfo service = ServiceInfo.create("_weinre._tcp.local.", "Weinre", port, "The Weinre HTTP Server");
-        Main.debug("ZeroConf Service: " + service);
-        jmdns.registerService(service);
+        String serviceName = "Weinre";
+        ServiceInfo weinreService = ServiceInfo.create("_weinre._tcp.local.", serviceName, port, "");
+        ServiceInfo httpService = ServiceInfo.create("_http._tcp.local.", serviceName, port, "");
+        
+        jmdns.registerService(weinreService);
+        jmdns.registerService(httpService);
+        
     }
         
 }
